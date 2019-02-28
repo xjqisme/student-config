@@ -1,0 +1,124 @@
+
+1.Linux-mysql安装
+进入src目录下
+cd /usr/local/src
+创建mysql文件夹
+mkdir mysql
+导入mysql ..tar.gz
+解压文件
+tar -xvf Percona-Server-5.6.24-72.2-r8d0f85b-el6-x86_64-bundle.tar.gz
+删除tar.gz
+re -rf Percona-Server-5.6.24-72.2-r8d0f85b-el6-x86_64-bundle.tar.gz
+安装mysql顺序
+1.debuginfo 2. Shared 3.client 4.server.
+安装命令:
+rpm -ivh Percona-Server-56-debuginfo-5.6.24-rel72.2.el6.x86_64.rpm
+启动Mysql
+service mysql start   启动命令
+service mysql stop    停止命令
+service mysql restart 重启命令
+设定管理员用户
+mysqladmin -u root password ?(设置的密码)
+登录mysql
+mysql -u root -p 回车
+导入数据库
+source jt.sql; 
+source /usr/local/src/mysql/jt.sql;
+关闭防火墙
+service iptables stop
+开放Linux数据库权限
+grant all on *.* to 'root'@'%' identified by '123456';
+修改主从库二进制文件(Mysql主从同步实现 从表server-id=加一(2))
+vim /etc/my.cnf
+server-id=1
+log-bin=mysql-bin
+进入mysql文件夹
+cd /var/lib/mysql
+重新启动mysql
+service mysql restart
+mysql关闭
+service mysql stop
+
+数据库主从连接
+#我是主库 查看状态
+SHOW MASTER STATUS
+#我是从库 IP 192.168.172.132加端口/用户名/密码/二进制日志文件/读取位置
+CHANGE MASTER TO MASTER_HOST="192.168.172.132",
+MASTER_PORT=3306,
+MASTER_USER="root",
+MASTER_PASSWORD="123456",
+MASTER_LOG_FILE="mysql-bin.000002",
+MASTER_LOG_POS=120
+#开启主从服务
+START SLAVE
+#检查主从状态
+SHOW SLAVE STATUS
+#如果配置出错先关闭主从服务
+STOP SLAVE
+
+
+3.使用amoeba实现负载均衡,数据库读写分离
+cd进入目录
+#cd /usr/local/src
+新建文件夹java
+#mkdir java
+进入java根目录
+#cd java
+导入文件删除tar.gz包
+#rm jdk-8u51-linux-x64.tar.gz
+进入跟目录下
+# cd jdk1.8.0_51/
+查看文件路径
+# pwd
+编辑环境变量
+# vim /etc/profile
+让配置文件生效
+#source /etc/profile
+查看是否安装成功
+#java -version
+进入amoeba文件夹
+导入文件
+解压文件 
+tar -xvf amoeba...
+删除tar.gz包 
+rm -rf amoeba...tar.gz
+进入conf
+cd conf
+修改文件 amoeba.xml dbservices.xml
+进入bin目录下开启amoeba
+cd bin
+./launcher
+关闭amoeba
+./shutdownps
+查看线程信息
+ps -ef |grep amoeba
+kill -9 -线程名(不要删除用户的线程哪个服务启动)
+
+2.Linux-tomcat安装
+cd /usr/local/src
+mkdir tomcats
+导入tomcat...tar.gz
+解压tomcat 文件
+tar -xvf apache-tomcat-7.0.55.tar.gz
+删除apache-tomcat-7.0.55.tar.gz文件
+修改apache-tomcat-7.0.55名称
+mv apache-tomcat-7.0.55 tomcat-8080
+在tomcats文件夹下复制tomcat-8080
+mv tomcat-8080 tomcat-8081 等
+启动tomcat   sh startup.sh      ./startup.sh  
+停止tomcat   sh shutdown.sh     ./shutdown.sh
+关闭Linux防火墙
+service iptables stop
+
+关闭   service iptables stop
+启动   service iptables start
+chkconfig iptables on     #永久开启
+chkconfig iptables off    #永久关闭
+Iptables -I -INPUT -p tcp --dport 8080 -j ACCEPT临时关闭防火墙对某些端口进行开放
+项目缺省发布先关闭tomcat
+./shutdown.sh
+删除root文件
+rm -rf ROOT
+上传war包ROOT.war(项目打包修改名称为ROOT)
+从新启动
+sh bin/startup.sh
