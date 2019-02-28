@@ -1,0 +1,32 @@
+#定义用户默认的连接环境
+spring:
+  profiles: 
+    active: dev
+---
+server:
+  port: 8091  #定义项目的端口号
+  servlet:
+    context-path: /jt
+# yml 语法 1.配置注意时缩进 2. ：后需跟空隔
+user:
+  id: 100
+  username: 毛毛
+  age: 22
+#定义环境的名称
+spring:
+  profiles: prod
+  
+---  #代表环境的分割线
+server:
+  port: 8095  #定义项目的端口号
+  servlet:
+    context-path: /
+# yml 语法 1.配置注意时缩进 2. ：后需跟空隔
+user:
+  id: 100
+  username: 元宵快乐
+  age: 100
+#定义环境的名称
+spring:
+  profiles: dev
+  
